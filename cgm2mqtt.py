@@ -26,7 +26,7 @@ import requests
 from dotenv import load_dotenv
 
 LIBRE_DEFAULT_BASE = "https://api.libreview.io"
-LIBRE_VERSION = "4.12.0"
+LIBRE_VERSION = "4.16.0"
 LIBRE_PRODUCT = "llu.android"
 
 log = logging.getLogger("cgm2mqtt")
