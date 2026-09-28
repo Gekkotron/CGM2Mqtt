@@ -28,6 +28,9 @@ python cgm2mqtt.py
 All configuration lives in `.env`. See `.env.example` for the full list. The
 required keys are `LIBRE_EMAIL`, `LIBRE_PASSWORD`, and `MQTT_HOST`.
 
+Set `MQTT_USERNAME` / `MQTT_PASSWORD` if your broker requires auth (leave
+blank for anonymous brokers). Set `MQTT_TLS=true` to connect over TLS.
+
 The LibreLinkUp account must already be set up in the LibreLinkUp mobile app
 and must have at least one accepted patient sharing connection. If your
 account requires 2FA or new terms-of-use acceptance, complete that in the app
@@ -71,3 +74,7 @@ The bridge will fetch immediately and publish to `cgm/last` and `cgm/history`.
 - The bridge auto-detects the regional API endpoint when the global endpoint
   responds with a redirect, or you can pin it with `LIBRE_REGION=eu`.
 - Tokens are cached in memory and refreshed automatically when they expire.
+
+## License
+
+Provided as-is for personal use.
