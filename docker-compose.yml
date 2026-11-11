@@ -1,0 +1,10 @@
+services:
+  cgm2mqtt:
+    build: .
+    image: cgm2mqtt:latest
+    container_name: cgm2mqtt
+    restart: unless-stopped
+    env_file: .env
+    # Lets MQTT_HOST=host.docker.internal reach a broker running on the Docker host (Linux included).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

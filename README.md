@@ -23,6 +23,28 @@ $EDITOR .env
 python cgm2mqtt.py
 ```
 
+## Docker
+
+```bash
+cp .env.example .env
+$EDITOR .env
+docker compose up -d --build
+docker compose logs -f
+```
+
+The container reads its configuration from `.env` (via `env_file`). Inside the
+container, `localhost` refers to the container itself, so if the broker runs on
+the Docker host set `MQTT_HOST=host.docker.internal`. If the broker is another
+container, put both on the same Docker network and use its service name.
+
+Without compose:
+
+```bash
+docker build -t cgm2mqtt .
+docker run -d --name cgm2mqtt --restart unless-stopped \
+  --env-file .env --add-host host.docker.internal:host-gateway cgm2mqtt
+```
+
 ## Configuration
 
 All configuration lives in `.env`. See `.env.example` for the full list. The
