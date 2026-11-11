@@ -25,25 +25,67 @@ python cgm2mqtt.py
 
 ## Docker
 
+Recommended for running the bridge permanently on a home server. Run these
+commands from the repository root (the folder containing `docker-compose.yml`):
+
 ```bash
+git clone https://github.com/Gekkotron/CGM2Mqtt.git
+cd CGM2Mqtt
 cp .env.example .env
 $EDITOR .env
 docker compose up -d --build
 docker compose logs -f
 ```
 
-The container reads its configuration from `.env` (via `env_file`). Inside the
-container, `localhost` refers to the container itself, so if the broker runs on
-the Docker host set `MQTT_HOST=host.docker.internal`. If the broker is another
-container, put both on the same Docker network and use its service name.
+The container reads its configuration from `.env` (via `env_file`) and restarts
+automatically (`restart: unless-stopped`), including after a reboot.
 
-Without compose:
+Inside the container, `localhost` refers to the container itself:
+
+- Broker on the Docker host: set `MQTT_HOST=host.docker.internal`.
+- Broker in another container: put both on the same Docker network and use the
+  broker's service name.
+- Broker elsewhere on the LAN: use its IP or hostname.
+
+### Day-to-day commands
+
+```bash
+docker compose ps                # status
+docker compose logs -f           # follow logs
+docker compose restart           # restart (e.g. after editing .env)
+docker compose down              # stop and remove the container
+git pull && docker compose up -d --build   # update to the latest version
+```
+
+### Migrating from a bare Python install
+
+Stop the old process first, otherwise two bridges publish to the same topics:
+
+```bash
+pgrep -af cgm2mqtt               # find it
+pkill -f cgm2mqtt.py             # SIGTERM: publishes "offline" and exits cleanly
+```
+
+If it was started by systemd, stop it with
+`sudo systemctl stop <service> && sudo systemctl disable <service>` instead,
+or it will be restarted. Remove any `@reboot` line from `crontab -e` too.
+
+### Without compose
 
 ```bash
 docker build -t cgm2mqtt .
 docker run -d --name cgm2mqtt --restart unless-stopped \
   --env-file .env --add-host host.docker.internal:host-gateway cgm2mqtt
 ```
+
+### Troubleshooting
+
+- **`no configuration file provided: not found`**: you are not in the
+  repository root, or your checkout predates the Docker files. `cd` into the
+  repo and `git pull`.
+- **`git pull` complains a `refs/heads/...` reference was not fetched**: your
+  local branch tracks a remote branch that has been deleted. Point it at `main`:
+  `git fetch origin && git switch main && git branch -u origin/main && git pull`.
 
 ## Configuration
 
